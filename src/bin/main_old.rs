@@ -54,6 +54,7 @@ pub fn mandelbrot() -> impl FnMut(Image, &Inputs) {
                         Iteration::StoppedAtIter(tick)
                     } else {
                         let z_new = z * z + c;
+                        pixel[0] = 0;
                         pixel[1] = 0;
                         pixel[2] = 0;
                         Iteration::Running(RunningPixel { c: *c, z: z_new })
