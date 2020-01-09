@@ -12,16 +12,14 @@ fn main() {
                 .short("d")
                 .long("dimension")
                 .takes_value(true)
-                .help("WIDTHxHEIGHT")
-                .required(true),
+                .help("default 8192x4608"),
         )
         .arg(
             Arg::with_name("iterations")
                 .short("i")
                 .long("iterations")
                 .takes_value(true)
-                .help("number of iterations to calculate")
-                .required(true),
+                .help("default 100"),
         )
         .arg(
             Arg::with_name("mandel")
