@@ -1,5 +1,5 @@
 [package]
-name = "butterbrot"
+name = "budderbrot"
 version = "0.1.0"
 authors = ["Malte Müller <malte@malte-mueller.eu>"]
 edition = "2018"

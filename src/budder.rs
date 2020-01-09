@@ -1,6 +1,6 @@
 extern crate image;
 
-use image::{ImageBuffer, Rgb, RgbImage};
+use image::{Rgb, RgbImage};
 use ndarray::{azip, Array, Array2, Ix1};
 use num::complex::Complex;
 use std::convert::TryInto;
@@ -8,20 +8,6 @@ use std::f64;
 use std::io::stdout;
 use std::io::Write;
 use std::time;
-
-const WIDTH: u32 = 8192;
-const HEIGHT: u32 = 4608;
-
-fn render() {
-    // let mut mandel: RgbImage = ImageBuffer::new(WIDTH, HEIGHT);
-    let mut buddah: RgbImage = ImageBuffer::new(WIDTH, HEIGHT);
-
-    // mandel_budder_brot(&mut mandel, &mut budder, 100);
-    buddah_brot(&mut buddah, 20000);
-
-    // mandel.save("mandel.png").unwrap();
-    buddah.save("buddah.png").unwrap();
-}
 
 struct RunningPixel {
     c: Complex<f64>,
@@ -33,7 +19,7 @@ enum Iteration {
     StoppedAtIter(usize),
 }
 
-fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
+pub fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
     let width = mandel.width();
     let height = mandel.height();
     let width_size: usize = width.try_into().unwrap();
@@ -87,7 +73,7 @@ fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
     println!("\nfinished after {:?}", ela);
 }
 
-fn buddah_brot(img: &mut RgbImage, iters: usize) {
+pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
     let width = img.width();
     let height = img.height();
     let width_size: usize = width.try_into().unwrap();
@@ -208,8 +194,4 @@ fn buddah_brot(img: &mut RgbImage, iters: usize) {
         let grey = (255f64 * (*vis).ln()) as u8;
         **p = Rgb([grey, grey, grey]);
     });
-}
-
-fn main() {
-    render();
 }
