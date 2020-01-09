@@ -14,14 +14,12 @@ const HEIGHT: u32 = 4608;
 
 fn render() {
     // let mut mandel: RgbImage = ImageBuffer::new(WIDTH, HEIGHT);
-    // let mut budder: RgbImage = ImageBuffer::new(WIDTH, HEIGHT);
     let mut buddah: RgbImage = ImageBuffer::new(WIDTH, HEIGHT);
 
     // mandel_budder_brot(&mut mandel, &mut budder, 100);
     buddah_brot(&mut buddah, 20000);
 
     // mandel.save("mandel.png").unwrap();
-    //budder.save("budder.png").unwrap();
     buddah.save("buddah.png").unwrap();
 }
 
@@ -35,7 +33,7 @@ enum Iteration {
     StoppedAtIter(usize),
 }
 
-fn mandel_budder_brot(mandel: &mut RgbImage, budder: &mut RgbImage, iters: usize) {
+fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
     let width = mandel.width();
     let height = mandel.height();
     let width_size: usize = width.try_into().unwrap();
@@ -55,7 +53,6 @@ fn mandel_budder_brot(mandel: &mut RgbImage, budder: &mut RgbImage, iters: usize
         Iteration::Running(RunningPixel { c, z })
     });
 
-    let mut visits = Array2::<f64>::zeros((height_size, width_size));
     let start_time = time::Instant::now();
 
     for i in 0..iters {
@@ -76,13 +73,6 @@ fn mandel_budder_brot(mandel: &mut RgbImage, budder: &mut RgbImage, iters: usize
                         Iteration::StoppedAtIter(i)
                     } else {
                         let z_new = z * z + c;
-                        let x = (((z_new - center).re / scale).floor() + half_width) as usize;
-                        let y = (-((z_new - center).im / scale).floor() + half_height) as usize;
-                        // let x : usize = (x as i64).try_into().unwrap();
-                        // let y : usize = (y as i64).try_into().unwrap();
-                        if x < width_size && y < height_size {
-                            visits[(y, x)] += 1f64;
-                        }
                         Iteration::Running(RunningPixel { c: *c, z: z_new })
                     }
                 }
@@ -95,21 +85,6 @@ fn mandel_budder_brot(mandel: &mut RgbImage, budder: &mut RgbImage, iters: usize
 
     let ela = start_time.elapsed();
     println!("\nfinished after {:?}", ela);
-
-    let maxvisit = visits.fold(0f64, |b, a| b.max(*a));
-    println!("maxvisit: {}", maxvisit);
-    visits = visits.map(|a| a / maxvisit);
-    //visits = visits.map(|a| (a - 1.0).exp());
-
-    let mut pixels2d = budder
-        .pixels_mut()
-        .collect::<Array<&mut Rgb<u8>, Ix1>>()
-        .into_shape((height_size, width_size))
-        .unwrap();
-    azip!((p in &mut pixels2d, vis in &mut visits){
-        let grey = (255f64 * (*vis).log10()) as u8;
-        **p = Rgb([grey, grey, grey]);
-    });
 }
 
 fn buddah_brot(img: &mut RgbImage, iters: usize) {
