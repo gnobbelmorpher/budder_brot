@@ -1,7 +1,7 @@
 extern crate image;
 
 use image::{ImageBuffer, Rgb, RgbImage};
-use ndarray::{azip, Array, Array2, Ix1, Ix2};
+use ndarray::{azip, Array, Array2, Ix1};
 use num::complex::Complex;
 use std::convert::TryInto;
 use std::f64;
@@ -9,8 +9,8 @@ use std::io::stdout;
 use std::io::Write;
 use std::time;
 
-const WIDTH: u32 = 8000;
-const HEIGHT: u32 = 8000;
+const WIDTH: u32 = 8192;
+const HEIGHT: u32 = 4608;
 
 fn render() {
     // let mut mandel: RgbImage = ImageBuffer::new(WIDTH, HEIGHT);
@@ -18,7 +18,7 @@ fn render() {
     let mut buddah: RgbImage = ImageBuffer::new(WIDTH, HEIGHT);
 
     // mandel_budder_brot(&mut mandel, &mut budder, 100);
-    buddah_brot(&mut buddah, 100);
+    buddah_brot(&mut buddah, 20000);
 
     // mandel.save("mandel.png").unwrap();
     //budder.save("budder.png").unwrap();
@@ -133,6 +133,7 @@ fn buddah_brot(img: &mut RgbImage, iters: usize) {
     });
 
     //let iterations diverge
+    println!("Pre-Iterations:");
     for i in 0..iters {
         let iter_start_time = time::Instant::now();
 
@@ -150,27 +151,34 @@ fn buddah_brot(img: &mut RgbImage, iters: usize) {
             };
         }
 
+        let p = (i * 50) / iters;
+        let bar1 = "=".repeat(p);
+        let bar2 = " ".repeat(50 - p - 1);
         let ela = iter_start_time.elapsed();
         print!(
-            "\rPre-Iteration {}/{} finished after {:?}",
+            "\r[{}{}] {}/{} finished after {:?}",
+            bar1,
+            bar2,
             i + 1,
             iters,
             ela
         );
-        stdout().flush();
+        stdout().flush().unwrap();
     }
-    println!("");
     //reset z
-    let mut values = values.map(|it| match it {
-        Iteration::Running(RunningPixel { c, z: _ }) => Iteration::Running(RunningPixel {
-            c: *c,
-            z: Complex::new(0.0, 0.0),
-        }),
-        Iteration::StoppedAtIter(_) => Iteration::StoppedAtIter(0),
-    });
+    for it in values.iter_mut() {
+        *it = match it {
+            Iteration::Running(RunningPixel { c, z: _ }) => Iteration::Running(RunningPixel {
+                c: *c,
+                z: Complex::new(0.0, 0.0),
+            }),
+            Iteration::StoppedAtIter(_) => Iteration::StoppedAtIter(0),
+        };
+    }
 
     //track remaining iterations
     let mut visits = Array2::<f64>::zeros((height_size, width_size));
+    println!("\nMain-Iterations:");
     for i in 0..iters {
         let iter_start_time = time::Instant::now();
 
@@ -195,9 +203,19 @@ fn buddah_brot(img: &mut RgbImage, iters: usize) {
             };
         }
 
+        let p = (i * 50) / iters;
+        let bar1 = "=".repeat(p);
+        let bar2 = " ".repeat(50 - p - 1);
         let ela = iter_start_time.elapsed();
-        print!("\rIteration {}/{} finished after {:?}", i + 1, iters, ela);
-        stdout().flush();
+        print!(
+            "\r[{}{}] {}/{} finished after {:?}",
+            bar1,
+            bar2,
+            i + 1,
+            iters,
+            ela
+        );
+        stdout().flush().unwrap();
     }
     println!("");
 
