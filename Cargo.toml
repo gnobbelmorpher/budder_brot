@@ -14,3 +14,4 @@ ndarray = { version = "0.13.0", features = ["rayon"] }
 noise = "0.6.0"
 simdnoise = "3.1.4"
 palette = "0.5.0"
+clap = "2.33.0"

@@ -19,7 +19,24 @@ enum Iteration {
     StoppedAtIter(usize),
 }
 
+fn print_status(i: usize, total: usize, time: time::Duration) {
+    let p = (i * 50) / total;
+    let bar1 = "=".repeat(p);
+    let bar2 = " ".repeat(50 - p - 1);
+
+    print!(
+        "\r[{}>{}] {}/{} finished after {:?}",
+        bar1,
+        bar2,
+        i + 1,
+        total,
+        time
+    );
+    stdout().flush().unwrap();
+}
+
 pub fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
+    println!("Mandel:");
     let width = mandel.width();
     let height = mandel.height();
     let width_size: usize = width.try_into().unwrap();
@@ -38,8 +55,6 @@ pub fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
         let z = Complex::new(0.0, 0.0);
         Iteration::Running(RunningPixel { c, z })
     });
-
-    let start_time = time::Instant::now();
 
     for i in 0..iters {
         let iter_start_time = time::Instant::now();
@@ -66,14 +81,12 @@ pub fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
             };
         });
         let ela = iter_start_time.elapsed();
-        println!("Iteration {} finished after {:?}", i, ela);
+        print_status(i, iters, ela);
     }
-
-    let ela = start_time.elapsed();
-    println!("\nfinished after {:?}", ela);
 }
 
 pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
+    println!("Buddah:");
     let width = img.width();
     let height = img.height();
     let width_size: usize = width.try_into().unwrap();
@@ -111,20 +124,8 @@ pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
                 Iteration::StoppedAtIter(s) => Iteration::StoppedAtIter(*s),
             };
         }
-
-        let p = (i * 50) / iters;
-        let bar1 = "=".repeat(p);
-        let bar2 = " ".repeat(50 - p - 1);
         let ela = iter_start_time.elapsed();
-        print!(
-            "\r[{}{}] {}/{} finished after {:?}",
-            bar1,
-            bar2,
-            i + 1,
-            iters,
-            ela
-        );
-        stdout().flush().unwrap();
+        print_status(i, iters, ela);
     }
     //reset z
     for it in values.iter_mut() {
@@ -164,26 +165,14 @@ pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
             };
         }
 
-        let p = (i * 50) / iters;
-        let bar1 = "=".repeat(p);
-        let bar2 = " ".repeat(50 - p - 1);
         let ela = iter_start_time.elapsed();
-        print!(
-            "\r[{}{}] {}/{} finished after {:?}",
-            bar1,
-            bar2,
-            i + 1,
-            iters,
-            ela
-        );
-        stdout().flush().unwrap();
+        print_status(i, iters, ela);
     }
     println!("");
 
     let maxvisit = visits.fold(0f64, |b, a| b.max(*a));
     println!("maxvisit: {}", maxvisit);
     visits = visits.map(|a| a / maxvisit);
-    //visits = visits.map(|a| (a - 1.0).exp());
 
     let mut pixels2d = img
         .pixels_mut()
