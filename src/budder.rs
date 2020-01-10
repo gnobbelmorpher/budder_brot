@@ -85,7 +85,10 @@ pub fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
     }
 }
 
-pub fn inverted_buddah_brot(img: &mut RgbImage, iters: usize) {
+pub fn buddah_brot(img: &mut RgbImage, iters: usize, inverted: bool) {
+    if inverted {
+        print!("inverted ");
+    }
     println!("Buddah:");
     let width = img.width();
     let height = img.height();
@@ -128,14 +131,28 @@ pub fn inverted_buddah_brot(img: &mut RgbImage, iters: usize) {
         print_status(i, iters, ela);
     }
     //reset z
-    for it in values.iter_mut() {
-        *it = match it {
-            Iteration::Running(RunningPixel { c, z: _ }) => Iteration::Running(RunningPixel {
-                c: *c,
-                z: Complex::new(0.0, 0.0),
-            }),
-            Iteration::Stopped(c) => Iteration::Stopped(*c),
-        };
+    if !inverted {
+        for it in values.iter_mut() {
+            *it = match it {
+                Iteration::Running(RunningPixel { c: _, z: _ }) => {
+                    Iteration::Stopped(Complex::new(0.0, 0.0))
+                }
+                Iteration::Stopped(c) => Iteration::Running(RunningPixel {
+                    c: *c,
+                    z: Complex::new(0.0, 0.0),
+                }),
+            };
+        }
+    } else {
+        for it in values.iter_mut() {
+            *it = match it {
+                Iteration::Running(RunningPixel { c, z: _ }) => Iteration::Running(RunningPixel {
+                    c: *c,
+                    z: Complex::new(0.0, 0.0),
+                }),
+                Iteration::Stopped(c) => Iteration::Stopped(*c),
+            };
+        }
     }
 
     //track remaining iterations
@@ -180,8 +197,8 @@ pub fn inverted_buddah_brot(img: &mut RgbImage, iters: usize) {
         .into_shape((height_size, width_size))
         .unwrap();
     azip!((p in &mut pixels2d, vis in &mut visits){
-        let r = (255f64 * (*vis).ln() *0.2) as u8;
-        let g = (255f64 * (*vis).ln() *0.8) as u8;
+        let r = (255f64 * (*vis).ln() *1.0) as u8;
+        let g = (255f64 * (*vis).ln() *1.0) as u8;
         let b = (255f64 * (*vis).ln() *1.0) as u8;
 
         **p = Rgb([r, g, b]);

@@ -26,14 +26,21 @@ fn main() {
                 .short("m")
                 .long("mandel")
                 .takes_value(false)
-                .help("render mandel only"),
+                .help("render mandel"),
         )
         .arg(
             Arg::with_name("ibuddah")
                 .short("B")
                 .long("ibuddah")
                 .takes_value(false)
-                .help("render inverted buddah only"),
+                .help("render inverted buddah"),
+        )
+        .arg(
+            Arg::with_name("buddah")
+                .short("b")
+                .long("ibuddah")
+                .takes_value(false)
+                .help("render inverted buddah"),
         )
         .get_matches();
 
@@ -50,8 +57,9 @@ fn main() {
     let width = dimension[0].parse::<u32>().unwrap_or(8192);
     let height = dimension[1].parse::<u32>().unwrap_or(4608);
 
-    let mandel = !matches.is_present("ibuddah");
-    let ibuddah = !matches.is_present("mandel");
+    let buddah = matches.is_present("buddah");
+    let ibuddah = matches.is_present("ibuddah");
+    let mandel = matches.is_present("mandel");
 
-    budderbrot::run(width, height, iterations, mandel, ibuddah);
+    budderbrot::run(width, height, iterations, mandel, ibuddah, buddah);
 }
