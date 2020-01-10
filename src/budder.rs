@@ -16,7 +16,7 @@ struct RunningPixel {
 
 enum Iteration {
     Running(RunningPixel),
-    StoppedAtIter(usize),
+    Stopped(Complex<f64>),
 }
 
 fn print_status(i: usize, total: usize, time: time::Duration) {
@@ -71,13 +71,13 @@ pub fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
                         let g = 0 + (i * 15) as u8;
                         let b = 255 - (i * 10) as u8;
                         **p = Rgb([r, g, b]);
-                        Iteration::StoppedAtIter(i)
+                        Iteration::Stopped(*c)
                     } else {
                         let z_new = z * z + c;
                         Iteration::Running(RunningPixel { c: *c, z: z_new })
                     }
                 }
-                Iteration::StoppedAtIter(s) => Iteration::StoppedAtIter(*s),
+                Iteration::Stopped(c) => Iteration::Stopped(*c),
             };
         });
         let ela = iter_start_time.elapsed();
@@ -85,7 +85,7 @@ pub fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
     }
 }
 
-pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
+pub fn inverted_buddah_brot(img: &mut RgbImage, iters: usize) {
     println!("Buddah:");
     let width = img.width();
     let height = img.height();
@@ -115,13 +115,13 @@ pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
             *it = match it {
                 Iteration::Running(RunningPixel { ref c, ref z }) => {
                     if z.norm_sqr() > 128.0 {
-                        Iteration::StoppedAtIter(i)
+                        Iteration::Stopped(*c)
                     } else {
                         let z_new = z * z + c;
                         Iteration::Running(RunningPixel { c: *c, z: z_new })
                     }
                 }
-                Iteration::StoppedAtIter(s) => Iteration::StoppedAtIter(*s),
+                Iteration::Stopped(c) => Iteration::Stopped(*c),
             };
         }
         let ela = iter_start_time.elapsed();
@@ -134,7 +134,7 @@ pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
                 c: *c,
                 z: Complex::new(0.0, 0.0),
             }),
-            Iteration::StoppedAtIter(_) => Iteration::StoppedAtIter(0),
+            Iteration::Stopped(c) => Iteration::Stopped(*c),
         };
     }
 
@@ -148,7 +148,7 @@ pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
             *it = match it {
                 Iteration::Running(RunningPixel { ref c, ref z }) => {
                     if z.norm_sqr() > 128.0 {
-                        Iteration::StoppedAtIter(i)
+                        Iteration::Stopped(*c)
                     } else {
                         let z_new = z * z + c;
                         let x = (((z_new - center).re / scale).floor() + half_width) as usize;
@@ -161,7 +161,7 @@ pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
                         Iteration::Running(RunningPixel { c: *c, z: z_new })
                     }
                 }
-                Iteration::StoppedAtIter(s) => Iteration::StoppedAtIter(*s),
+                Iteration::Stopped(c) => Iteration::Stopped(*c),
             };
         }
 
@@ -180,7 +180,10 @@ pub fn buddah_brot(img: &mut RgbImage, iters: usize) {
         .into_shape((height_size, width_size))
         .unwrap();
     azip!((p in &mut pixels2d, vis in &mut visits){
-        let grey = (255f64 * (*vis).ln()) as u8;
-        **p = Rgb([grey, grey, grey]);
+        let r = (255f64 * (*vis).ln() *0.2) as u8;
+        let g = (255f64 * (*vis).ln() *0.8) as u8;
+        let b = (255f64 * (*vis).ln() *1.0) as u8;
+
+        **p = Rgb([r, g, b]);
     });
 }
