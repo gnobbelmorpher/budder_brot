@@ -42,6 +42,13 @@ fn main() {
                 .takes_value(false)
                 .help("render buddah"),
         )
+        .arg(
+            Arg::with_name("threads")
+                .short("t")
+                .long("threads")
+                .takes_value(false)
+                .help("amount of threads for buddah and inverted buddah"),
+        )
         .get_matches();
 
     let iterations = match matches.value_of("iterations") {
@@ -61,5 +68,10 @@ fn main() {
     let ibuddah = matches.is_present("ibuddah");
     let mandel = matches.is_present("mandel");
 
-    budderbrot::run(width, height, iterations, mandel, ibuddah, buddah);
+    let threads = match matches.value_of("threads") {
+        None => 4,
+        Some(s) => s.parse::<usize>().unwrap_or(4),
+    };
+
+    budderbrot::run(width, height, iterations, mandel, ibuddah, buddah, threads);
 }

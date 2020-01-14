@@ -66,7 +66,13 @@ pub fn mandel_brot(mandel: &mut RgbImage, iters: usize) {
     }
 }
 
-pub fn buddah_brot(width: u32, height: u32, iters: usize, inverted: bool) -> RgbImage {
+pub fn buddah_brot(
+    width: u32,
+    height: u32,
+    iters: usize,
+    inverted: bool,
+    threadcount: usize,
+) -> RgbImage {
     if inverted {
         print!("inverted ");
     }
@@ -94,7 +100,7 @@ pub fn buddah_brot(width: u32, height: u32, iters: usize, inverted: bool) -> Rgb
     }
 
     let count = width_size * height_size;
-    let num_threads = 4;
+    let num_threads = threadcount;
     let chunksize = count / num_threads;
     //let iterations diverge
     println!("Pre-Iterations:");
