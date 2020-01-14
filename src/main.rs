@@ -38,9 +38,9 @@ fn main() {
         .arg(
             Arg::with_name("buddah")
                 .short("b")
-                .long("ibuddah")
+                .long("buddah")
                 .takes_value(false)
-                .help("render inverted buddah"),
+                .help("render buddah"),
         )
         .get_matches();
 
