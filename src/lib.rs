@@ -12,15 +12,13 @@ pub fn run(width: u32, height: u32, iters: usize, mandel: bool, ibuddah: bool, b
     }
 
     if buddah {
-        let mut buddah: RgbImage = ImageBuffer::new(width, height);
-        buddah_brot(&mut buddah, iters, false);
+        let buddah = buddah_brot(width, height, iters, false);
         let name = format!("buddah({}x{})_{}.png", width, height, iters);
         buddah.save(name).unwrap();
     }
 
     if ibuddah {
-        let mut ibuddah: RgbImage = ImageBuffer::new(width, height);
-        buddah_brot(&mut ibuddah, iters, true);
+        let ibuddah = buddah_brot(width, height, iters, true);
         let name = format!("ibuddah({}x{})_{}.png", width, height, iters);
         ibuddah.save(name).unwrap();
     }
