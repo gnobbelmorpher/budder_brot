@@ -71,8 +71,10 @@ pub fn mandelbrot() -> impl FnMut(Image, &Inputs, (u32, u32)) {
                     //schieb = true;
                     center_i = coordinates.0 + (*y as f64 - height as f64/2.0) as f64 * coordinates.2;
                     center_r = coordinates.1 + (*x as f64 - width as f64/2.0) as f64 * coordinates.2;
+                    println! {"{}+{}j", center_r, center_i}
                     coordinates = (center_i, center_r, scale);
                     tick = 0;
+
                     values = initialize(width, height, coordinates);
                 } //Speichert den Landeort der Maus/kann den mittelpunkt verschieben
                 /*Event::MouseButtonUp { x, y, .. } => {
@@ -163,7 +165,7 @@ pub fn mandelbrot() -> impl FnMut(Image, &Inputs, (u32, u32)) {
         azip!((mut pixel in image.arr.genrows_mut(), it in &mut values) {
             *it = match it {
                 Iteration::Running(RunningPixel { ref c, ref z }) => {
-                    if z.norm_sqr() > 16.0 {
+                    if z.norm_sqr() > 3.0 {
                         pixel[0] = 0 + (tick * 10) as u8;
                         pixel[1] = 255 - (tick * 20) as u8;
                         pixel[2] = 255 - (tick * 10) as u8;
